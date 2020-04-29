@@ -17,7 +17,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="0.3.2",
+    version="1.0.0",
     description="Library for fragment based analysis",
     long_description=long_description,
     # The project's main homepage.
@@ -68,6 +68,7 @@ setup(
         "numpy",
         "nose",
         "pprint",
+        "requests",
         "socketIO_client_nexus",
     ],
     # List additional groups of dependencies here (e.g. development

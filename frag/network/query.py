@@ -1,4 +1,5 @@
 import random
+import requests
 from frag.utils.network_utils import write_results, get_driver, canon_input
 
 
@@ -200,25 +201,23 @@ def get_full_graph(smiles,
                    graph_url="neo4j",
                    graph_auth="neo4j/neo4j",
                    isomericSmiles=True):
+
+    # We don't care about the graph variables,
+    # instead we route our requests through the
+    # 'fragalysis-nery' service - for now a service
+    # in our own namespace.
+
     smiles = canon_input(smiles, isomericSmiles)
-    driver = get_driver(graph_url, graph_auth)
-    with driver.session() as session:
-        records = []
-        for record in session.read_transaction(find_proximal, smiles):
-            ans = define_proximal_type(record)
-            records.append(ans)
-        for record in session.read_transaction(find_double_edge, smiles):
-            ans = define_double_edge_type(record)
-            records.append(ans)
-        for label in list(set([x.label for x in records])):
-            # Linkers are meaningless
-            if "." in label:
-                continue
-        if records:
-            orga_dict = organise(records, None)
-            return orga_dict
-        else:
-            print("Nothing found for input: " + smiles)
+    url = 'fragalysis-nery/get-full-graph'
+    print('Calling %s with %s...' % (url, smiles))
+    r = requests.get(url, json={'canon_smiles': smiles})
+    print('Got status_code %s' % r.status_code)
+    if r.status_code == 200:
+        print('Got following json()...')
+        print(r.json())
+        return r.json()
+    else:
+        print("Get failure (%s)" % r.status_code)
 
 
 def custom_query(query, graph_url="neo4j", graph_auth="neo4j/neo4j"):
